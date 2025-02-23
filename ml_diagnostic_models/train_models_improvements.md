@@ -9,6 +9,8 @@ Run Matlab code to extract training data to .csv.
 Several tries were made to handle .mat data file with python and libraries like scipy without success. Conclusion was that the safest and more efficient way to handle that is within matlab. Hereunder the Matlab code to convert the file to .csv to be later exploited with python. 
 
 >> 
+% For training_dataset:
+
 % Load the .mat file
 load('training_dataset copy.mat');
 
@@ -32,9 +34,49 @@ end
 
 % Write the combined data to a single CSV file
 writetable(combinedTable, 'combined_data.csv');
+
+% For real_testing_dataset:
+
+% Load the .mat file
+load('real_testing_dataset copy.mat');
+
+% Initialize an empty table to store the combined data
+combinedTable = table();
+
+% Loop through each table in varData
+for i = 1:length(dataTables)
+    % Get the current table
+    currentTable = dataTables{i};
+
+    % Replicate the target value to match the number of rows in the current table
+    targetValues = repmat(y(i), height(currentTable), 1);
+
+    % Add the target values to the current table
+    currentTable.Target = targetValues;
+
+    % Concatenate the current table to the combined table
+    combinedTable = [combinedTable; currentTable];
+end
+
+% Write the combined data to a single CSV file
+writetable(combinedTable, 'combined_testing_data.csv');
 >> 
 
 This generates a .csv file of 1,03 GB. 
+
+# Data shape
+
+3,600,000 rows x 13 columns
+
+Columns 13
+Rows 3,600,000
+
+Rows with missing values
+0 (0.0%)
+Duplicate rows
+2,361 (0.1%)
+
+All variables have no missing values and a significant number of distinct values. The histograms suggest that the data for each motor command is fairly evenly distributed, all seem to be normally distributed across their respective ranges (apart from DesiredTrajectory-z, RealizedTrajectory-z with left-skewed distributions).
 
 # LSTM-Based Fault Diagnosis with Digital Twin Features (PyTorch Implementation)
 
